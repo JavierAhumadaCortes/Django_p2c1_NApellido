@@ -29,6 +29,7 @@ source .venv/Scripts/activate
 
 ### 4. Instalar las dependencias
 
+pip freeze > requirements.txt
 python -m pip install -r requirements.txt
 
 ## Verificación
