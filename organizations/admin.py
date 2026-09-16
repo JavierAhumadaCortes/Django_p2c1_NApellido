@@ -1,6 +1,12 @@
 from django.contrib import admin
 from .models import Organization, Department, Zone
 
+class DepartmentInline(admin.TabularInline):
+    model = Department
+    extra = 0
+    fields = ("name",)
+    show_change_link = True
+
 #admin.site.register(Organization)
 @admin.register(Organization)
 class OrganizationAdmin(admin.ModelAdmin):
@@ -14,6 +20,7 @@ class OrganizationAdmin(admin.ModelAdmin):
     list_filter = ("is_active",)
     ordering = ("name",)
     list_per_page = 25
+    inlines = [DepartmentInline]
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
