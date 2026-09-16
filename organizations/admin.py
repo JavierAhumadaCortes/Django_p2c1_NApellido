@@ -42,3 +42,55 @@ class ZoneAdmin(admin.ModelAdmin):
     list_filter = ("name","organization")
     ordering = ("name",)
     list_per_page = 25
+    
+    
+    
+# accounts/admin.py
+from .models import UserProfile
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "user",
+        "employee_code",
+        "organization",
+        "department",
+        "phone",
+        "created_at",
+    )
+
+    search_fields = (
+        "user__username",
+        "user__first_name",
+        "user__last_name",
+        "user__email",
+        "employee_code",
+        "organization__name",
+        "department__name",
+    )
+
+    list_filter = (
+        "organization",
+        "department",
+    )
+
+    ordering = (
+        "organization__name",
+        "user__username",
+    )
+
+    list_select_related = (
+        "user",
+        "organization",
+        "department",
+    )
+
+    readonly_fields = (
+        "created_at",
+        "updated_at",
+        "deleted_at",
+    )
+
+    list_per_page = 25
