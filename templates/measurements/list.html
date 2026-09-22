@@ -1,0 +1,351 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Lista de Mediciones{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- =========================================================
+         ENCABEZADO
+    ========================================================== -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="mb-1">Mediciones</h2>
+            <p class="text-muted mb-0">
+                Historial de mediciones registradas
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         CONTROLES
+    ========================================================== -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <form method="get"
+                  class="row g-3 align-items-end">
+
+                <!-- Cantidad por página -->
+                <div class="col-md-4">
+
+                    <label
+                        for="page_size"
+                        class="form-label"
+                    >
+                        Registros por página
+                    </label>
+
+                    <select
+                        name="page_size"
+                        id="page_size"
+                        class="form-select"
+                        onchange="this.form.submit()"
+                    >
+
+                        <option value="5"
+                            {% if page_size == 5 %}selected{% endif %}>
+                            5 registros
+                        </option>
+
+                        <option value="15"
+                            {% if page_size == 15 %}selected{% endif %}>
+                            15 registros
+                        </option>
+
+                        <option value="30"
+                            {% if page_size == 30 %}selected{% endif %}>
+                            30 registros
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         TABLA
+    ========================================================== -->
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-white">
+
+            <strong>
+                Listado de mediciones
+            </strong>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Dispositivo</th>
+                            <th>Fecha</th>
+                            <th>Consumo</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for measurement in page_obj %}
+
+                            <tr>
+
+                                <td>
+                                    {{ measurement.id }}
+                                </td>
+
+
+                                <td>
+                                    {{ measurement.device }}
+                                </td>
+
+
+                                <td>
+                                    {{ measurement.measured_at|date:"d/m/Y H:i" }}
+                                </td>
+
+
+                                <td>
+
+                                    {{ measurement.energy_kwh }}
+
+                                    <span class="text-muted">
+                                        kWh
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="4"
+                                    class="text-center py-5 text-muted"
+                                >
+
+                                    No existen mediciones registradas.
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             PAGINACIÓN
+        ====================================================== -->
+        {% if page_obj.paginator.num_pages > 1 %}
+
+            <div class="card-footer bg-white">
+
+                <div
+                    class="d-flex
+                           justify-content-between
+                           align-items-center"
+                >
+
+                    <!-- Información -->
+
+                    <small class="text-muted">
+
+                        Página
+
+                        <strong>
+                            {{ page_obj.number }}
+                        </strong>
+
+                        de
+
+                        <strong>
+                            {{ page_obj.paginator.num_pages }}
+                        </strong>
+
+                    </small>
+
+
+                    <!-- Navegación -->
+
+                    <nav>
+
+                        <ul class="pagination mb-0">
+
+
+                            <!-- PRIMERA -->
+
+                            {% if page_obj.has_previous %}
+
+                                <li class="page-item">
+
+                                    <a
+                                        class="page-link"
+                                        href="?page=1"
+                                    >
+                                        «
+                                    </a>
+
+                                </li>
+
+
+                                <!-- ANTERIOR -->
+
+                                <li class="page-item">
+
+                                    <a
+                                        class="page-link"
+                                        href="?page={{ page_obj.previous_page_number }}"
+                                    >
+                                        Anterior
+                                    </a>
+
+                                </li>
+
+                            {% else %}
+
+                                <li class="page-item disabled">
+
+                                    <span class="page-link">
+                                        «
+                                    </span>
+
+                                </li>
+
+                                <li class="page-item disabled">
+
+                                    <span class="page-link">
+                                        Anterior
+                                    </span>
+
+                                </li>
+
+                            {% endif %}
+
+
+                            <!-- PÁGINA ACTUAL -->
+
+                            <li class="page-item active">
+
+                                <span class="page-link">
+
+                                    {{ page_obj.number }}
+
+                                </span>
+
+                            </li>
+
+
+                            <!-- SIGUIENTE -->
+
+                            {% if page_obj.has_next %}
+
+                                <li class="page-item">
+
+                                    <a
+                                        class="page-link"
+                                        href="?page={{ page_obj.next_page_number }}"
+                                    >
+                                        Siguiente
+                                    </a>
+
+                                </li>
+
+
+                                <!-- ÚLTIMA -->
+
+                                <li class="page-item">
+
+                                    <a
+                                        class="page-link"
+                                        href="?page={{ page_obj.paginator.num_pages }}"
+                                    >
+                                        »
+                                    </a>
+
+                                </li>
+
+                            {% else %}
+
+                                <li class="page-item disabled">
+
+                                    <span class="page-link">
+                                        Siguiente
+                                    </span>
+
+                                </li>
+
+                                <li class="page-item disabled">
+
+                                    <span class="page-link">
+                                        »
+                                    </span>
+
+                                </li>
+
+                            {% endif %}
+
+                        </ul>
+
+                    </nav>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =========================================================
+         EXPLICACIÓN DE SESIÓN
+    ========================================================== -->
+
+    <div class="alert alert-info mt-4">
+
+        <strong>Preferencia de usuario:</strong>
+
+        el número de registros por página queda almacenado
+        temporalmente en la sesión.
+
+        Si cambias de página o vuelves posteriormente al listado,
+        Django recuerda tu selección.
+
+    </div>
+
+</div>
+
+{% endblock %}

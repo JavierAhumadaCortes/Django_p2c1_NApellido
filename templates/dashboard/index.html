@@ -1,0 +1,112 @@
+{% extends "base_admin.html" %}
+{% block content %}
+<div class="p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Dashboard</h2>
+            <p class="text-muted mb-0">Resumen general del negocio</p>
+        </div>
+        <button class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>Nuevo registro
+        </button>
+    </div>
+
+    <div class="row g-4 mb-4">
+        {% comment %}
+        Ejemplo de datos demo para Django
+        {% endcomment %}
+
+        {% for item in stats %}
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100 p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="stat-icon bg-{{ item.bg }} {{ item.text }}">
+                        <i class="{{ item.icon }}"></i>
+                    </div>
+                    <span class="badge bg-light text-success">{{ item.trend }}</span>
+                </div>
+                <div>
+                    <p class="text-muted small mb-1">{{ item.title }}</p>
+                    <h3 class="mb-0">{{ item.value }}</h3>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="mb-0">Ingresos mensuales</h5>
+                    <span class="badge bg-primary-subtle text-primary">2025</span>
+                </div>
+                <div class="d-flex align-items-end gap-3" style="height: 220px;">
+                    {% for month, value in months %}
+                    <div class="flex-fill text-center">
+                        <div class="chart-bar bg-primary rounded-top mx-auto" data-height="{{ value }}"
+                            style="width: 100%; min-height: 30px;"></div>
+                        <small class="text-muted d-block mt-2">{{ month }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card p-4 h-100">
+                <h5 class="mb-4">Actividad reciente</h5>
+                <div class="list-group list-group-flush">
+                    {% for activity in recent_activity %}
+                    <div class="list-group-item px-0 py-3 border-0 border-bottom">
+                        <div class="d-flex justify-content-between gap-3">
+                            <div>
+                                <strong>{{ activity.title }}</strong>
+                                <div class="small text-muted">{{ activity.time }}</div>
+                            </div>
+                            <span class="badge {{ activity.badge_class }}">{{ activity.status }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Últimos pedidos</h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary">Ver todos</a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Producto</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td>{{ order.client }}</td>
+                                <td>{{ order.product }}</td>
+                                <td>{{ order.date }}</td>
+                                <td><span class="badge {{ order.badge_class }}">{{ order.status }}</span></td>
+                                <td><strong>{{ order.total }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

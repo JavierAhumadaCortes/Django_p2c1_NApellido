@@ -1,25 +1,50 @@
 {% load django_bootstrap5 %}
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta charset="utf-8">
-        <title>{% block title %}EcoEnergy{% endblock %}</title>
-        {% bootstrap_css %}
-    </head>
-    <body class="container py-4">
-        <nav>
-            <a href="{% url 'dispositivos:inicio' %}">Inicio</a>
-            <a href="{% url 'dispositivos:catalogo' %}">Dispositivos</a>
-        </nav>
-        <main>
-            {% block content %}{% endblock %}
-        </main>
-        <footer>
-            <p>&copy; {% now "Y" %} Mi sitio web</p>
-        </footer>
-        {% bootstrap_javascript %}
-    </body>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>{% block title %}EcoEnergy{% endblock %}</title>
+    {% bootstrap_css %}
+</head>
+
+<body class="container py-4">
+    <nav>
+        <a href="{% url 'devices:inicio' %}">dispositivos</a>
+        <a href="{% url 'devices:catalogo' %}">Dispositivos catalogo</a>
+        
+            {% if user.is_authenticated %}
+            <span>{{ user.username }}</span>
+
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class="btn btn-outline-danger" type="submit">
+                    Cerrar sesión
+                </button>
+            </form>
+            {% else %}
+            <a class="" href="{% url 'login' %}">
+               Login
+            </a>
+            {% endif %}
+       
+    </nav>
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; {% now "Y" %} Mi sitio web</p>
+    </footer>
+    {% bootstrap_javascript %}
+</body>
 
 </html>
+

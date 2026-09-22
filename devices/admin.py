@@ -79,6 +79,7 @@ class MeasurementAdmin(admin.ModelAdmin):
         "energy_kwh",
         "measured_at",
         "created_at",
+        "deleted_at",
     )
     search_fields = (
         "device__name",
