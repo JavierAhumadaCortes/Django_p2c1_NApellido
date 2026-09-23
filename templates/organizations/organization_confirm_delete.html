@@ -1,0 +1,36 @@
+{% extends "base_admin.html" %}
+{% block title %} Eliminar organización {% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Eliminar organización</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>¿Está seguro de eliminar esta organización?</strong>
+                        <p class="mb-0 mt-2">Esta acción no se puede deshacer.</p>
+                    </div>
+                    <div class="mb-4">
+                        <p class="mb-1"><strong>Organización:</strong></p>
+                        <h5>{{ object.name }}</h5>
+                        <p class="text-muted mb-0">RUT / Tax ID:{{ object.tax_id }}
+                        </p>
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'organizations:organization_list' %}" class="btn btn-secondary">
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base_admin.html" %}
+{% block title %}Organizaciones{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Organizaciones</h2>
+            <p class="text-muted mb-0">
+                Listado de organizaciones activas.
+            </p>
+        </div>
+        {% if perms.organizations.add_organization %}
+        <a href="{% url 'organizations:organization_create' %}" class="btn btn-primary">
+            Nueva organización
+        </a>
+        {% endif %}
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if organizations %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>RUT / Tax ID</th>
+                            <th>Estado</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for organization in organizations %}
+                        <tr>
+                            <td>
+                                {{ organization.id }}
+                            </td>
+                            <td>
+                                <strong>
+                                    {{ organization.name }}
+                                </strong>
+                            </td>
+                            <td>
+                                {{ organization.tax_id }}
+                            </td>
+                            <td>
+                                <span class="badge bg-success">
+                                    Activa
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                {% if perms.organizations.change_organization %}
+                                <a href="{% url 'organizations:organization_update' organization.pk %}"
+                                    class="btn btn-sm btn-outline-primary">
+                                    Editar
+                                </a>
+                                {% endif %}
+                                {% if perms.organizations.delete_organization %}
+                                <a href="{% url 'organizations:organization_delete' organization.pk %}" class="btn btn-sm btn-outline-danger">
+                                    Eliminar
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info mb-0">
+                No existen organizaciones activas registradas.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if form %}
+    {% include "organizations/_organization_form_modal.html" %}
+{% endif %}
+
+
+{% endblock %}
+
+
+
+
+
