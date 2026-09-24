@@ -1,0 +1,126 @@
+{% extends "base_admin.html" %}
+{% block title %}Dispositivos{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Dispositivos</h2>
+            <p class="text-muted mb-0">
+                Listado de Dispositivos activas.
+            </p>
+        </div>
+        {% if perms.devices.add_device %}
+        <a href="{% url 'devices:device_create' %}" class="btn btn-primary">
+            Nueva organización
+        </a>
+        {% endif %}
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if devices %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>N Serial</th>
+                            <th>Img</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for device in devices %}
+                        <tr>
+                            <td>
+                                {{ device.id }}
+                            </td>
+                            <td>
+                                <strong>
+                                    {{ device.name }}
+                                </strong>
+                            </td>
+                            <td>
+                                {{ device.serial_number }}
+                            </td>
+                            <td>
+                                {% if device.image %}
+                                    <img
+                                        src="{{ device.image.url }}"
+                                        alt="Imagen de {{ device.name }}"
+                                        class="img-fluid rounded"
+                                        width="50"
+                                    >
+                                {% else %}
+                                    <span class="text-muted">Sin imagen</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if perms.devices.change_device %}
+                                <a href="{% url 'devices:device_update' device.pk %}"
+                                    class="btn btn-sm btn-outline-primary">
+                                    Editar
+                                </a>
+                                {% endif %}
+                                {% if perms.devices.delete_device %}
+                                <a href="{% url 'devices:device_delete' device.pk %}" class="btn btn-sm btn-outline-danger">
+                                    Eliminar 2
+                                </a>
+                                <form id="delete-{{ device.pk }}" method="post" action="{% url 'devices:device_delete' device.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="js-delete" >
+                                        Eliminar
+                                    </button>
+                                </form>
+
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info mb-0">
+                No existen Dispositivos activas registradas.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if form %}
+    {% include "devices/_device_form_modal.html" %}
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.querySelectorAll(".js-delete").forEach(button => {
+        button.addEventListener("click", async (event) => {
+            if (!window.Swal) {
+                if (!window.confirm("¿Eliminar el registro?")) {
+                    event.preventDefault();
+                }
+                return;
+            }
+            event.preventDefault();
+            const result = await Swal.fire({
+            title: "¿Eliminar el registro?",
+            text: "Esta acción requiere confirmación.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Eliminar",
+            cancelButtonText: "Cancelar",
+            });
+
+            if (result.isConfirmed) {
+            button.form.requestSubmit();
+            }
+        });
+    });
+
+</script>
+{% endblock %}
+

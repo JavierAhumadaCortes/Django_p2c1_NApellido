@@ -5,15 +5,22 @@ from django.contrib.auth.decorators import (
     login_required,
     permission_required,
 )
-from devices.models import Measurement
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.views.generic import DeleteView, ListView, UpdateView, CreateView
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+)
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
+from .forms import DeviceForm
 from .models import Device
+from devices.models import Measurement
 
 
 ALLOWED_PAGE_SIZES = {5, 15, 30}
-
 
 def inicio(request):
 
@@ -29,7 +36,6 @@ def inicio(request):
         contexto,
     )
 
-
 def catalogo(request):
     dispositivos = cargar_dispositivos()
     activos = sum(1 for item in dispositivos if item["estado"] == "Activo")
@@ -42,12 +48,10 @@ def catalogo(request):
 
     return render(request, "dispositivos/catalogo.html", contexto)
 
-
 def dispositivos_zona(request, zona_id):
     if zona_id != 3:
         return HttpResponse("Zona no encontrada", status=404)
     return HttpResponse(f"Dispositivos de la zona {zona_id}")
-
 
 @login_required
 @permission_required(
@@ -70,7 +74,6 @@ def measurement_list(request):
         {"measurements": measurements},
     )
 
-
 def device_list_old(request):
     organization = request.user.profile.organization
     devices = (
@@ -88,17 +91,6 @@ def device_list_old(request):
             "organization": organization,
         },
     )
-    
-# devices/views.py
-
-from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
-from django.shortcuts import render
-
-from .models import Device
-
-
-ALLOWED_PAGE_SIZES = {5, 15, 30}
 
 
 def get_scoped_devices(request):
@@ -124,7 +116,6 @@ def get_scoped_devices(request):
     return queryset.filter(
         organization=organization
     )
-
 
 @login_required
 def device_list(request):
@@ -160,7 +151,6 @@ def device_list(request):
             "page_size": page_size,
         },
     )
-    
 
 def remember_page_size(request):
     request.session["device_page_size"] = 15
@@ -170,3 +160,89 @@ def remember_page_size(request):
     )
     return redirect("devices:list")
 
+
+class DeviceListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = "devices.view_device"
+    raise_exception = True
+
+    model = Device
+    template_name = "devices/device_list.html"
+    context_object_name = "devices"
+
+    def get_queryset(self):
+        return Device.objects.filter(deleted_at__isnull=True)
+
+
+
+class DevicePageContextMixin:
+    def get_context_data(
+        self, **kwargs
+    ):
+        context = super().get_context_data(
+            **kwargs
+        )
+
+        context["devices"] = (
+            Device.objects.filter(
+                deleted_at__isnull=True
+            )
+        )
+
+        context["open_modal"] = True
+        
+        return context
+
+class DeviceCreateView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    SuccessMessageMixin,
+    DevicePageContextMixin,
+    CreateView,
+):
+    permission_required = "devices.add_device"
+    raise_exception = True
+
+    model = Device
+    form_class = DeviceForm
+    template_name = "devices/device_list.html"
+    success_url = reverse_lazy("devices:device_list")
+    success_message = "Dispositivos creada correctamente."
+
+class DeviceUpdateView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    SuccessMessageMixin,
+    DevicePageContextMixin,
+    UpdateView,
+):
+    permission_required = "devices.change_device"
+    raise_exception = True
+
+    model = Device
+    form_class = DeviceForm
+    template_name = "devices/device_list.html"
+    success_url = reverse_lazy("devices:device_list")
+    success_message = "Dispositivos actualizada correctamente."
+
+class DeviceDeleteView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    SuccessMessageMixin,
+    DeleteView,
+):
+    model = Device
+    permission_required = "devices.delete_device"
+    raise_exception = True
+    success_url = reverse_lazy("devices:device_list")
+    success_message = ("Dispositivo eliminado correctamente.")
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+
+        # Superusuario: acceso global
+        if self.request.user.is_superuser:
+            return qs
+
+        organization = (self.request.user.profile.organization)
+
+        return qs.filter(organization=organization)

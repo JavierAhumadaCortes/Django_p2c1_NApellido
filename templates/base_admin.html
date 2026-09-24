@@ -4,11 +4,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" _javascript="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <title>{% block title %}EcoEnergy{% endblock %}</title>
     {% bootstrap_css %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
     <style>
         body {
             background: #f4f7fb;
@@ -75,7 +76,7 @@
             </div>
             <nav class="nav flex-column gap-2">
                 <a class="nav-link active" href="{% url 'dashboard:dashboard' %}"><i class="bi bi-grid me-2"></i>Dashboard</a>
-                <a class="nav-link" href="{% url 'devices:list' %}"><i class="bi bi-people me-2"></i>lista dispositivos</a>
+                <a class="nav-link" href="{% url 'devices:device_list' %}"><i class="bi bi-people me-2"></i>lista dispositivos</a>
                 <a class="nav-link" href="{% url 'devices:remember_page_size' %}"><i class="bi bi-graph-up me-2"></i>dispositivos catalogo</a>
                 <a class="nav-link" href="{% url 'organizations:organization_list' %}"><i class="bi bi-box-seam me-2"></i>organizaciones</a>
                 <a class="nav-link" href="#"><i class="bi bi-chat-left-text me-2"></i>Mensajes</a>
@@ -160,6 +161,8 @@
             </div>
         </footer>
         {% bootstrap_javascript %}
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% block scripts  %}{% endblock %}
 </body>
 
 </html>

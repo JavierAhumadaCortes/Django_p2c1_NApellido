@@ -43,7 +43,6 @@ class OrganizationPageContextMixin:
 
         return context
 
-
 class OrganizationCreateView(
     LoginRequiredMixin,
     PermissionRequiredMixin,
@@ -60,7 +59,6 @@ class OrganizationCreateView(
     success_url = reverse_lazy("organizations:organization_list")
     success_message = "Organización creada correctamente."
 
-
 class OrganizationUpdateView(
     LoginRequiredMixin,
     PermissionRequiredMixin,
@@ -76,7 +74,6 @@ class OrganizationUpdateView(
     template_name = "organizations/organization_list.html"
     success_url = reverse_lazy("organizations:organization_list")
     success_message = "Organización actualizada correctamente."
-
 
 class OrganizationDeleteView(
     LoginRequiredMixin,

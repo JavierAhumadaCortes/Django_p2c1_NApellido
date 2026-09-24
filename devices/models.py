@@ -15,6 +15,10 @@ class Device(BaseModel):
     )
     name = models.CharField(max_length=120)
     serial_number = models.CharField(max_length=80, unique=True)
+    image = models.ImageField(
+        upload_to="devices/%Y/%m/",
+        blank=True,
+    )
     
     def __str__(self):
         return self.name
@@ -82,3 +86,4 @@ class AlertRule(BaseModel):
 
     def __str__(self):
         return f"{self.name} - {self.device}"
+
