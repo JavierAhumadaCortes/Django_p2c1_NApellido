@@ -1,17 +1,30 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
+{% block title %}Acceso Denegado (403){% endblock %}
 {% block content %}
 <div class="container py-5">
-    <div class="alert alert-danger">
-        <h4>Acceso denegado</h4>
-
-        <p>
-            {{ exception|default:"No tienes permisos para acceder a esta sección." }}
-        </p>
-
-        <a href="{% url 'dashboard:dashboard' %}" class="btn btn-primary">
-            Volver
-        </a>
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 text-center">
+            <div class="card shadow-lg border-0 rounded-lg p-5 bg-white">
+                <div class="mb-4">
+                    <span class="display-1 fw-bold text-danger">403</span>
+                </div>
+                <h1 class="h3 fw-bold text-dark mb-3">Acceso Denegado</h1>
+                
+                <p class="text-muted mb-4">
+                    {{ exception|default:"Lo sentimos, pero no tienes los permisos 
+                    necesarios para acceder a esta página. Si crees que esto es un error, 
+                    por favor contacta al administrador del sitio." }}
+                </p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-4 gap-3">
+                        <i class="bi bi-house-door me-2"></i> Volver al Inicio
+                    </a>
+                    <button onclick="window.history.back();" class="btn btn-outline-secondary btn-lg px-4">
+                        Regresar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

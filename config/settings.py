@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from django.contrib.messages import constants as msg
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +30,7 @@ SECRET_KEY = 'django-insecure--#(ha*m!!*k%6zw*=s+q0+i-o@5d(6lfi5_bn+u87jx)z59qq%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', "*"]
 
 
 # Application definition
@@ -165,3 +166,12 @@ MAILERS = {
     },
 }
 
+
+
+MESSAGE_TAGS = {
+    msg.DEBUG: 'secondary',
+    msg.INFO: 'info',
+    msg.SUCCESS: 'success',
+    msg.WARNING: 'warning',
+    msg.ERROR: 'danger',  # Bootstrap usa 'danger'
+}

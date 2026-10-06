@@ -1,7 +1,9 @@
 # dashboard/views.py
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 @login_required
 def dashboard(request):
@@ -16,8 +18,32 @@ def dashboard(request):
         {'title': 'Retención', 'value': '94.8%', 'trend': '+1.7%', 'icon': 'bi-graph-up-arrow', 'bg': 'danger', 'text': 'text-white'}
     ]
 
+    visits = request.session.get(
+        "dashboard_visits",
+        0,
+    )
+
+    request.session[
+        "dashboard_visits"
+    ] = visits + 1
+
+    
     return render(
         request,
         "dashboard/index.html",
-        {"organization": "", "stats": stats},
+        {"organization": "", "stats": stats,  "visits": visits + 1,},
     )
+    
+
+@login_required
+def remember_preference(request):
+    request.session[
+        "dashboard_mode"
+    ] = "compact"
+
+    messages.error(
+        request,
+        "Preferencia guardada correctamente.",
+    )
+
+    return redirect("dashboard:dashboard")

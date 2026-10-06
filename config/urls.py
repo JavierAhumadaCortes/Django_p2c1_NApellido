@@ -27,9 +27,14 @@ urlpatterns = [
     path("organizations/", include("organizations.urls")),
     path("accounts/",include("django.contrib.auth.urls")),
 ]
+# config/urls.py
+handler403 = "core.views.permission_denied_view"
+
 
 if settings.DEBUG:
     urlpatterns += static(
         settings.MEDIA_URL,
         document_root=settings.MEDIA_ROOT,
     )
+    
+

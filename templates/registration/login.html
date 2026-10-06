@@ -1,20 +1,39 @@
 {# templates/registration/login.html #}
 {% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Iniciar Sesión - EcoEnergy{% endblock %}
 
 {% block content %}
-<h1>Ingreso al sistema</h1>
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6 col-lg-4">
+        
+        <div class="card shadow border-0">
+            <div class="card-header bg-success text-white text-center py-3">
+                <h4 class="mb-0">Bienvenido de nuevo</h4>
+            </div>
+            
+            <div class="card-body p-4">
+                {% if form.errors %}
+                <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                    Usuario o contraseña incorrectos.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+                {% endif %}
 
-{% if form.errors %}
-<div class="alert alert-danger">
-    Usuario o contraseña incorrectos.
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    
+                    {# Esta etiqueta renderiza el formulario automáticamente con estilos de Bootstrap #}
+                    {% bootstrap_form form %}
+                    
+                    <button class="btn btn-success w-100 mt-3 fw-bold" type="submit">
+                        Ingresar
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+    </div>
 </div>
-{% endif %}
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn btn-primary" type="submit">
-        Ingresar
-    </button>
-</form>
 {% endblock %}
