@@ -63,12 +63,9 @@
                                 </a>
                                 {% endif %}
                                 {% if perms.devices.delete_device %}
-                                <a href="{% url 'devices:device_delete' device.pk %}" class="btn btn-sm btn-outline-danger">
-                                    Eliminar 2
-                                </a>
                                 <form id="delete-{{ device.pk }}" method="post" action="{% url 'devices:device_delete' device.pk %}">
                                     {% csrf_token %}
-                                    <button type="submit" class="js-delete" >
+                                    <button type="submit" class="js-delete btn btn-sm btn-outline-danger" >
                                         Eliminar
                                     </button>
                                 </form>

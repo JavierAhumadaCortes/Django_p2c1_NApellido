@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', "*"]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "django_bootstrap5",
+    "channels",
+    "realtime",
     "core",
     "organizations",
     "devices",
@@ -175,3 +178,13 @@ MESSAGE_TAGS = {
     msg.WARNING: 'warning',
     msg.ERROR: 'danger',  # Bootstrap usa 'danger'
 }
+
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
+ASGI_APPLICATION = "config.asgi.application"

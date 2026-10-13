@@ -1,6 +1,8 @@
 # devices/models.py
 from django.db import models
 from core.models import BaseModel
+from django.core.validators import FileExtensionValidator
+
 
 class Device(BaseModel):
     organization = models.ForeignKey(
@@ -19,6 +21,14 @@ class Device(BaseModel):
         upload_to="devices/%Y/%m/",
         blank=True,
     )
+    
+    manual = models.FileField(
+        upload_to="devices/manuals/%Y/%m/",
+        blank=True,
+        validators=[FileExtensionValidator(["pdf"])],
+    )
+
+
     
     def __str__(self):
         return self.name

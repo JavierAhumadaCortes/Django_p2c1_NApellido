@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 40px auto; font-family: Arial;">
+
+    <h2>Prueba de WebSocket - EcoEnergy</h2>
+
+    <p>Estado de conexión:
+        <strong id="estado">Conectando...</strong>
+    </p>
+
+    <button
+        type="button"
+        id="btnEnviar"
+        disabled
+        style="padding: 12px 20px; cursor: pointer;"
+    >
+        Enviar evento WebSocket
+    </button>
+
+    <h3>Eventos recibidos</h3>
+
+    <div
+        id="mensajes"
+        style="background: #f4f4f4;
+               padding: 15px;
+               min-height: 150px;
+               border-radius: 8px;"
+    >
+        Esperando mensajes...
+    </div>
+
+</div>
+
+<script>
+    const protocolo = window.location.protocol === "https:"
+        ? "wss"
+        : "ws";
+
+    const socket = new WebSocket(
+        `${protocolo}://${window.location.host}/ws/dashboard/`
+    );
+
+    const estado = document.getElementById("estado");
+    const mensajes = document.getElementById("mensajes");
+    const btnEnviar = document.getElementById("btnEnviar");
+
+    socket.onopen = () => {
+        estado.textContent = "Conectado";
+        estado.style.color = "green";
+        btnEnviar.disabled = false;
+    };
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        const item = document.createElement("p");
+        item.textContent = JSON.stringify(data);
+
+        mensajes.prepend(item);
+    };
+
+    socket.onclose = () => {
+        estado.textContent = "Desconectado";
+        estado.style.color = "red";
+        btnEnviar.disabled = true;
+    };
+
+    socket.onerror = () => {
+        estado.textContent = "Error de conexión";
+        estado.style.color = "red";
+    };
+
+    btnEnviar.addEventListener("click", async () => {
+        btnEnviar.disabled = true;
+
+        try {
+            const response = await fetch(
+                "{% url 'dashboard:test_websocket' %}",
+                {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            console.log("Evento enviado desde Django");
+
+        } catch (error) {
+            console.error("Error enviando evento:", error);
+        } finally {
+            btnEnviar.disabled = socket.readyState !== WebSocket.OPEN;
+        }
+    });
+</script>
+{% endblock %}

@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from .services import cargar_dispositivos
@@ -192,6 +193,7 @@ class DevicePageContextMixin:
         
         return context
 
+from .services import publish_device_status
 class DeviceCreateView(
     LoginRequiredMixin,
     PermissionRequiredMixin,
@@ -207,6 +209,24 @@ class DeviceCreateView(
     template_name = "devices/device_list.html"
     success_url = reverse_lazy("devices:device_list")
     success_message = "Dispositivos creada correctamente."
+    
+    def form_valid(self, form):
+        # 1. Guardar el dispositivo
+        print("1. Entrando a form_valid de DeviceCreateView")
+        response = super().form_valid(form)
+
+        # 2. Obtener el dispositivo guardado
+        print(f"2. Dispositivo creado: {device.id} - {device.name}")
+        device = self.object
+
+        # 3. Publicar el evento después del commit
+        transaction.on_commit(
+            lambda: publish_device_status(device)
+        )
+        print("3. Publicación WebSocket programada")
+
+        # 4. Continuar con la redirección
+        return response
 
 class DeviceUpdateView(
     LoginRequiredMixin,
@@ -222,7 +242,40 @@ class DeviceUpdateView(
     form_class = DeviceForm
     template_name = "devices/device_list.html"
     success_url = reverse_lazy("devices:device_list")
-    success_message = "Dispositivos actualizada correctamente."
+    success_message = "Dispositivo actualizado correctamente."
+    
+    
+
+    def form_valid(self, form):
+        # 1. Ingresar al método
+        print("1. Entrando a form_valid de DeviceUpdateView")
+
+        # 2. Guardar los cambios
+        response = super().form_valid(form)
+
+        # 3. Obtener el dispositivo actualizado
+        device = self.object
+
+        print(
+            f"2. Dispositivo actualizado: "
+            f"{device.id} - {device.name}"
+        )
+        
+        def enviar_evento():
+            print("Ejecutando callback on_commit")
+            publish_device_status(device)
+
+        transaction.on_commit(enviar_evento)
+
+        print(
+            "Callback registrado. "
+            f"Transacción activa: {transaction.get_connection().in_atomic_block}"
+        )
+
+        print("3. Publicación WebSocket programada")
+
+        return response
+
 
 class DeviceDeleteView(
     LoginRequiredMixin,
@@ -246,3 +299,4 @@ class DeviceDeleteView(
         organization = (self.request.user.profile.organization)
 
         return qs.filter(organization=organization)
+    

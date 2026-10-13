@@ -15,8 +15,7 @@ class Organization(BaseModel):
         ordering = ["name"]
 
     def __str__(self):
-        return self.name
-    
+        return self.name   
 
 class Department(BaseModel):
     organization = models.ForeignKey(

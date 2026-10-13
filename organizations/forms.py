@@ -11,6 +11,11 @@ class OrganizationForm(forms.ModelForm):
             "tax_id",
             "is_active",
         ]
+        labels = {
+            "name": "Nombre",
+            "tax_id": "Identificador",
+            "is_active": "Está Activado",
+        }
         widgets = {
             "name": forms.TextInput(attrs={
                 "class": "form-control",

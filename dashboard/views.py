@@ -47,3 +47,50 @@ def remember_preference(request):
     )
 
     return redirect("dashboard:dashboard")
+
+
+    
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.views.decorators.http import require_POST
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
+
+@login_required
+def websocket_page(request):
+    return render(
+        request,
+        "dashboard/test_websocket.html"
+    )
+
+
+@login_required
+@require_POST
+def test_websocket(request):
+    channel_layer = get_channel_layer()
+
+    if channel_layer is None:
+        return JsonResponse(
+            {"error": "Channel layer no configurado"},
+            status=503
+        )
+
+    async_to_sync(channel_layer.group_send)(
+        "ecoenergy_dashboard",
+        {
+            "type": "device_event",
+            "payload": {
+                "type": "device_status_changed",
+                "device_id": 999,
+                "name": "Sensor de prueba",
+                "status": "active",
+            },
+        },
+    )
+
+    return JsonResponse({
+        "mensaje": "Evento publicado correctamente"
+    })
